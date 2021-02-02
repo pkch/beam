@@ -481,7 +481,7 @@ class AsSingleton(AsSideInput):
 
   Wrapping a PCollection side input argument to a PTransform in this container
   (e.g., data.apply('label', MyPTransform(), AsSingleton(my_side_input) )
-  selects the latter behavior.
+  selects the latter behavior. This forces materialization of the PCollection.
 
   The input PCollection must contain exactly one value per window, unless a
   default is given, in which case it may be empty.
@@ -520,7 +520,7 @@ class AsSingleton(AsSideInput):
 
 
 class AsIter(AsSideInput):
-  """Marker specifying that an entire PCollection is to be used as a side input.
+  """Marker specifying that just 1 value should be pulled from the PCollection.
 
   When a PCollection is supplied as a side input to a PTransform, it is
   necessary to indicate whether the entire PCollection should be made available
@@ -530,7 +530,7 @@ class AsIter(AsSideInput):
 
   Wrapping a PCollection side input argument to a PTransform in this container
   (e.g., data.apply('label', MyPTransform(), AsIter(my_side_input) ) selects the
-  former behavor.
+  former behavor. The PCollection is not materialized.
   """
   def __repr__(self):
     return 'AsIter(%s)' % self.pvalue
@@ -555,8 +555,8 @@ class AsList(AsSideInput):
   """Marker specifying that an entire PCollection is to be used as a side input.
 
   Intended for use in side-argument specification---the same places where
-  AsSingleton and AsIter are used, but forces materialization of this
-  PCollection as a list.
+  AsSingleton and AsIter are used, but returns an list-like interface. This
+  forces materialization of the PCollection.
 
   Args:
     pcoll: Input pcollection.
@@ -580,7 +580,7 @@ class AsDict(AsSideInput):
 
   Intended for use in side-argument specification---the same places where
   AsSingleton and AsIter are used, but returns an interface that allows
-  key lookup.
+  key lookup. This forces materilization of the PCollection.
 
   Args:
     pcoll: Input pcollection. All elements should be key-value pairs (i.e.
@@ -608,7 +608,7 @@ class AsMultiMap(AsSideInput):
 
   Intended for use in side-argument specification---the same places where
   AsSingleton and AsIter are used, but returns an interface that allows
-  key lookup.
+  key lookup. This forces materilization of the PCollection.
   """
   @staticmethod
   def _from_runtime_iterable(it, options):
